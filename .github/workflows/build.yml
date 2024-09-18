@@ -18,11 +18,17 @@ jobs:
 
     - run: dotnet restore DesktopBridgeSample.sln
 
+    - run: dotnet publish DesktopBridgeSample.Forms\DesktopBridgeSample.Forms.csproj -a x86 -c Release --no-restore --self-contained -p:EnableCompressionInSingleFile=$env:EnableCompressionInSingleFile -p:IncludeNativeLibrariesForSelfExtract=$env:IncludeNativeLibrariesForSelfExtract -p:PublishSingleFile=$env:PublishSingleFile
+      env:
+        EnableCompressionInSingleFile: true
+        IncludeNativeLibrariesForSelfExtract: true
+        PublishSingleFile: true
+
     - run: msbuild DesktopBridgeSample.Package\DesktopBridgeSample.Package.wapproj /v:m /p:AppxBundle=$env:AppxBundle /p:Configuration=$env:Configuration /p:Platform=$env:Platform /p:UapAppxPackageBuildMode=$env:UapAppxPackageBuildMode
       env:
         AppxBundle: Never
         Configuration: Release
-        Platform: AnyCPU
+        Platform: x86
         UapAppxPackageBuildMode: SideloadOnly
 
     - uses: actions/upload-artifact@v4
