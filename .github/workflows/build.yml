@@ -1,0 +1,31 @@
+name: Build
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - uses: microsoft/setup-msbuild@v2
+
+    - run: dotnet restore DesktopBridgeSample.sln
+
+    - run: msbuild DesktopBridgeSample.Package\DesktopBridgeSample.Package.wapproj /v:m /p:AppxBundle=$env:AppxBundle /p:Configuration=$env:Configuration /p:Platform=$env:Platform /p:UapAppxPackageBuildMode=$env:UapAppxPackageBuildMode
+      env:
+        AppxBundle: Never
+        Configuration: Release
+        Platform: AnyCPU
+        UapAppxPackageBuildMode: SideloadOnly
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: AppPackages
+        path: DesktopBridgeSample.Package\AppPackages
